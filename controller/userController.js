@@ -25,8 +25,12 @@ export async function registerUser(req, res, next){
 
 export async function getusers (req, res, next){
     try {
-        const findUsers = await user.find({});
-        return res.status(200).send(findUsers);
+        const findUsers = await user.find({}).populate({
+            path: 'tasks',
+            select: "name"
+        }).exec();
+        
+        return res.status(200).json({findUsers});
         
     } catch (error) {
         return res.status(500).send(error);
@@ -35,7 +39,7 @@ export async function getusers (req, res, next){
 
 export async function getSingleUser (req, res, next){
     try {
-        const findUser = await user.findById(req.params.id);
+        const findUser = await user.findById(req.params.id)
         if(!findUser){
             return res.status(404).send("no user found")
         }

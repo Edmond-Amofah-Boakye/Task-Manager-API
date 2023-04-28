@@ -1,7 +1,11 @@
 import taskModel from '../model/task.js'
 
 export async function createTask (req, res, next){
-    const createTask = new taskModel(req.body)
+    const createTask = new taskModel({
+        ...req.body,
+        createdBy: req.user._id
+
+    })
 
     try {
         await createTask.save();
@@ -15,8 +19,8 @@ export async function createTask (req, res, next){
 
 export async function getTask (req, res, next){
     try {
-        const allTask = await taskModel.find({});
-        return res.status(200).send(allTask)
+        const allTask = await taskModel.find({})
+        return res.status(200).json({allTask})
     } catch (error) {
         return res.status(500).send(error);
     }

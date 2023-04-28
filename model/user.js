@@ -2,6 +2,7 @@ import crypto from "crypto"
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import Task from '../model/task.js'
 
 const userModel = new mongoose.Schema({
     name:{
@@ -47,6 +48,9 @@ const userModel = new mongoose.Schema({
         select: false
     }
 
+},{
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
 }, {timestamps: true})
 
 userModel.pre("save", async function(next){
@@ -92,6 +96,19 @@ userModel.methods.generateReseteToken = async function(){
         return resetToken;
 
 }
+
+userModel.virtual('tasks',{
+    ref: "task",
+    localField: "_id",
+    foreignField: "createdBy"
+})
+
+
+//This works when a user is deleted
+// userModel.pre("remove", async function(next){
+//     await Task.deleteMany({createdBy: this._id})
+// })
+
 
 
 

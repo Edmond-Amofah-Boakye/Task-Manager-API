@@ -20,7 +20,7 @@ app.use(helmet())
 
 //to prevent too many request from one IP Address
 const limit = rateLimit({
-    max: 2,
+    max: 100,
     windowMs: 60 * 60 * 1000,
     message: "too many request from this IP"
 })

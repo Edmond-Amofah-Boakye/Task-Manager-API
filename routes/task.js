@@ -7,7 +7,7 @@ const router = Router();
 
 //create task
 router.route('/task')
-    .post(taskController.createTask)
+    .post(auth, taskController.createTask)
     .get(taskController.getTask)
 
 //get single task by id
