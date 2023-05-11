@@ -34,6 +34,10 @@ const userModel = new mongoose.Schema({
         select: false
     },
 
+    image:{
+        type: String
+    },
+
     resetPasswordToken:{
         type: String
     },

@@ -1,8 +1,12 @@
 import user from '../model/user.js';
+import AppError from '../utils/AppError.js';
 
 export async function registerUser(req, res, next){
     try {
-        const newuser = new user(req.body);
+        const newuser = new user({
+            ...req.body,
+            image: req.file.filename
+        });
         await newuser.save();
 
         const signToken = await newuser.generateToken()
@@ -18,7 +22,7 @@ export async function registerUser(req, res, next){
         res.status(201).json({newuser, signToken})
         
     } catch (error) {
-        res.status(500).send(error)
+        next(error)
     }
 }
 
@@ -33,7 +37,7 @@ export async function getusers (req, res, next){
         return res.status(200).json({findUsers});
         
     } catch (error) {
-        return res.status(500).send(error);
+        next(error)
     }
 }
 
@@ -41,11 +45,11 @@ export async function getSingleUser (req, res, next){
     try {
         const findUser = await user.findById(req.params.id)
         if(!findUser){
-            return res.status(404).send("no user found")
+            next(new AppError("no user found", 404))
         }
         return res.status(200).send(findUser)
     } catch (error) {
-        return res.status(500).send(error);
+        next(error);
     }
 }
 
@@ -54,7 +58,7 @@ export async function updateUserPassword (req, res, next){
         //check collection by the current user logged in
         const getUser = await user.findById(req.user.id).select("+password");
         if(!getUser){
-            next(res.status(404).send("user not found"))
+            next(new AppError("no user found", 404))
         }
 
         //if thesere is user, update the pasword
@@ -69,7 +73,7 @@ export async function updateUserPassword (req, res, next){
         return res.status(201).send({getUser, token})
         
     } catch (error) {
-        return res.status(500).send(error)
+        next(error)
     }
 }
 
@@ -77,11 +81,11 @@ export async function deleteUser (req, res, next){
     try {
         const findUser = await user.findByIdAndDelete(req.params.id);
         if(!findUser){
-            return res.status(404).send("no user found");
+            next(new AppError("no user found", 404))
         }
         res.status(200).send("successfully deleted")
     } catch (error) {
-        res.status(500).send(error)
+        next(error)
     }
 }
 

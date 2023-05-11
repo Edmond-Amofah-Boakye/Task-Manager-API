@@ -4,13 +4,14 @@ import auth from "../middleware/auth.js"
 import restrictTo from '../middleware/roles.js'
 
 import { Router } from "express";
+import upload from '../middleware/uploads.js';
 
 const router = Router();
 
 //register user 
 
 router.route('/user')
-    .post(usercontroller.registerUser)
+    .post(upload.single("image"), usercontroller.registerUser)
     .get(usercontroller.getusers)
 
 
